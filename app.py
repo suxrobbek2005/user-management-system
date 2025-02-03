@@ -1,11 +1,11 @@
 import hashlib
-from flask import Flask, request, render_template, flash
-from mysql import connector
+from flask import Flask, request, render_template, flash, redirect, url_for
+import settings
+from db import get_user, enter_infos
 
 
 app = Flask(__name__)
-app.secret_key = "secretkey"
-
+app.secret_key = settings.secret_key
 
 
 @app.route("/register", methods=["GET", "POST"])
@@ -13,8 +13,8 @@ def register():
     if request.method == "POST":
         form = request.form
 
-        users = list(filter(lambda user: form['username'] == user['username'], users_list))
-        if users:
+        user = get_user(form['username'])
+        if user:
             flash("Siz tanlagan username mavjud.")
             return render_template('register.html')
 
@@ -23,12 +23,15 @@ def register():
             "username": form['username'],
             "password": hashlib.sha256(form['password'].encode()).hexdigest()
         }
-        users_list.append(user)
+        enter_infos(user['name'], user['username'], user['password'])
 
-        print(users_list)
+        return redirect(url_for('login'))
 
     return render_template("register.html")
 
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    return "login page"
 
 if __name__ == '__main__':
     app.run(debug=True, port=8000)
