@@ -1,3 +1,3 @@
 user = 'root'
-password = 'Djcoder1120'
+password = 'yani_parol'
 secret_key = 'mysecretkey'
